@@ -1,0 +1,376 @@
+\documentclass[a4paper,11pt]{article}
+\newcommand{\todo}[1]{{\tt $\ldots$ #1 $\ldots$ }}
+\usepackage[utf8]{inputenc}  % Linux, macOS: enable non-English characters
+%\usepackage[latin1]{inputenc}    % Windows: enable non-English characters
+\usepackage[british]{babel}
+\usepackage{fullpage}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm} \newtheorem{theorem}{Theorem}
+\usepackage{booktabs}
+%\usepackage{clrscode3e}
+\usepackage{color}
+\usepackage{courier} % \texttt{...} gives thinner text
+\usepackage{float}
+\usepackage{mathtools} \mathtoolsset{showonlyrefs}  % provides \coloneqq
+\usepackage{multirow}
+\usepackage{tikz} \usetikzlibrary{trees}
+\usepackage{listings}
+\lstset{language=Python,
+	basicstyle=\footnotesize\ttfamily,
+	keywordstyle=\color[rgb]{0,0.5,0}\ttfamily,
+	stringstyle=\color{orange}\ttfamily,
+	commentstyle=\color{red}\ttfamily,
+	tabsize=2,
+	numbers=left, numberstyle=\tiny, numbersep=5pt,
+	breaklines=true,
+	breakatwhitespace=true,
+	prebreak={/},
+	captionpos=b,
+	columns=fullflexible,
+	escapeinside={\#*}{\^^M},
+	mathescape
+}
+\usepackage{hyperref}  % should always be the last package
+
+
+% useful wrappers for algorithmic/Python notation:
+\newcommand{\length}[1]{\text{len}(#1)}
+\newcommand{\twodots}{\mathinner{\ldotp\ldotp}}  % taken from clrscode3e.sty
+\newcommand{\Returns}{\longrightarrow}
+
+%% useful (wrappers for) math symbols:
+\newcommand{\Cardinality}[1]{\left\lvert#1\right\rvert}
+%\newcommand{\Cardinality}[1]{\##1}
+\newcommand{\Ceiling}[1]{\left\lceil#1\right\rceil}
+\newcommand{\Floor}[1]{\left\lfloor#1\right\rfloor}
+\newcommand{\Iff}{\Leftrightarrow}
+\newcommand{\Implies}{\Rightarrow}
+\newcommand{\Intersect}{\cap}
+\newcommand{\Oh}[1]{\mathcal{O}\left(#1\right)}
+\newcommand{\Sequence}[1]{\left[#1\right]}
+\newcommand{\Set}[1]{\left\{#1\right\}}
+\newcommand{\SetComp}[2]{\Set{#1\SuchThat#2}}
+\newcommand{\SuchThat}{\mid}
+\newcommand{\Tuple}[1]{\langle#1\rangle}
+\newcommand{\Union}{\cup}
+
+%% fancy characters:
+\usepackage{pifont}
+%\newcommand{\scissors}{\ding{36}}
+%\newcommand{\phone}{\ding{37}}
+%\newcommand{\aircraft}{\ding{40}}
+%\newcommand{\envelope}{\ding{41}}
+\newcommand{\handpoint}{\ding{43}}
+%\newcommand{\victory}{\ding{44}}
+%\newcommand{\handwrite}{\ding{45}}
+%\newcommand{\tick}{\ding{51}}
+%\newcommand{\notick}{\ding{55}}
+
+\renewcommand{\thepart}{\arabic{part}}
+\renewcommand{\thesection}{\Alph{section}}
+
+\title{\textbf{Algorithms \& Data Structures II (course 1DL231) \\
+    Uppsala University -- Autumn 2019 \\
+    Report for Assignment n  %% Replace n by 1, 2, or 3
+    by Team t}}              %% Replace t by your team number
+
+%% Replace by your name(s) and choose the encoding of line 3 or line 4:
+\author{Clara CLÄVER \and Whiz KIDD}
+
+%\date{Month Day, Year}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+%% Delete this paragraph:
+\noindent
+This document shows the ingredients of a good assignment report for
+this course.  The \LaTeX\ source code of this document illustrates
+almost everything you need to know about \LaTeX\ in order to typeset a
+professional-looking assignment report (for this course).  Use it as a
+starting point for imitation and delete everything irrelevant.  The
+usage of \LaTeX\ is \emph{optional}, but highly recommended, for
+reasons that will soon become clear to those who have never used it
+before; any learning time is \emph{outside} the budget of this course,
+but will hugely pay off, if not in this course then in the next
+course(s) you take and when writing a thesis or other scientific
+report.
+
+\part{Insertion Sort}\label{part:isort}
+\setcounter{section}{0} % reset the section counter for each part/problem
+
+\textsc{Insertion-Sort}\footnote{Your report need not contain an
+  explanation, like in this paragraph, of the problem to be solved:
+  you can start with the task answers, assuming the reader has read
+  the problem statement in the assignment.} ``is an efficient
+algorithm for sorting a small number of elements.  Insertion sort
+works the way many people sort a hand of playing cards.  We start with
+an empty left hand and the cards face down on the table.  We then
+remove one card at a time from the table and insert it into the
+correct position in the left hand.  To find the correct position for a
+card, we compare it with each of the cards already in the hand, from
+right to left, as illustrated in Figure~\ref{fig:isort}.  At all
+times, the cards held in the left hand are sorted, and these cards
+were originally the top cards of the pile on the table.'' (Quoted from
+page~17 of CLRS3~\cite{CLRS}.)
+
+\begin{figure}[t]  % make it float to the top of a page
+  \centering
+  \includegraphics[height=6cm]{isort}
+  \caption{Sorting a hand of cards using insertion sort.
+    (\copyright\ nobody, 2010)}
+  \label{fig:isort}
+\end{figure}
+
+\medskip
+
+In the sequel of part~\ref{part:isort}, assume that the problem tasks in
+the assignment were as follows (actual assignment statements in this
+course may have other tasks):
+\begin{enumerate}
+\renewcommand{\theenumi}{\Alph{enumi}}
+\item Implement \textsc{Insertion-Sort} as a Python function
+  $\mathit{insertion\_sort}(A)$, where the elements to be sorted are
+  provided in an integer array $A$ indexed from $0$ to $n-1$.  The
+  sorting is to be done \emph{in place}, returning $A$ in
+  non-decreasing order, that is:
+  $A[0] \leq A[1] \leq \dots \leq A[n-1]$.  For brevity, you can refer
+  to a sequence in non-decreasing order as a \emph{sorted sequence}.
+\item Compute the best, average, and worst-case time complexities of
+  \textsc{Insertion-Sort}.
+\end{enumerate}
+
+\section{Specification and Program}
+\label{sec:pgm:isort}
+
+A specification of sorting and our Python implementation of
+\textsc{Insertion-Sort} are given in Listing~\ref{pgm:isort}, where
+$n$ is referred to as $\length{A}$.
+
+\lstinputlisting[firstline=11,lastline=30,firstnumber=11,
+  %% See previous line for how only to include the actual contribution
+  float=t,label=pgm:isort,caption={Python
+  implementation of the \textsc{Insertion-Sort} algorithm on page~18
+  of CLRS3~\cite{CLRS}. \handpoint~Compare for example
+  line~\ref{line:ins-sort-while} with line~5 of that algorithm: arrays
+  are indexed from~$1$ in CLRS3 but from~$0$ in Python.  Note also
+  that a \emph{closed} interval $\ell \twodots u$, as used in the
+  mathematical notation of the comments, is denoted by the
+  \emph{right-open} interval $\ell : u+1$ in Python; you can use the
+  Python notation in comments and the running text, as long as you
+  comply with the Python semantics.}]{insertion_sort.py}
+
+\section{Complexity Analysis}
+\label{sec:analysis:isort}
+
+The program in Listing~\ref{pgm:isort} has two nested loops, so we
+analyse it starting from the inner loop, in
+lines~\ref{line:ins-sort-while} to~\ref{line:ins-sort-while-end},
+whose purpose is to insert $A[j]$ into the \emph{sorted} sequence
+$A[0 \twodots j-1]$, assuming $j>0$, yielding the sorted sequence
+$A[0 \twodots j]$.  Let $T_{\text{ins}}(j)$ denote the running time of
+this inner loop:
+\begin{equation} \label{rec:ins}
+  T_{\text{ins}}(j) =
+  \begin{cases}
+    \Theta(1) & \text{if~} A[j-1] \leq A[j] \hfill \text{(best case)} \\
+    \Theta(j) & \text{if~} A\left[\frac{j-1}{2}\right] < A[j] \leq
+    A\left[\frac{j+1}{2}\right] \hfill ~~ (\text{if~} j>1) ~~~ \text{(average case)} \\
+    \Theta(j) & \text{if~} A[j] < A[0] \hfill \text{(worst case)}
+  \end{cases}
+\end{equation}
+assuming that every comparison takes constant time and every
+assignment takes constant time.
+
+We can now analyse the outer loop, and hence the whole algorithm.  Let
+$n$ denote $\length{A}$ and let $T(n)$ denote the running time of
+$\text{insertion\_sort}(A)$.  We get the following recurrence:
+\begin{equation*}
+  T(n) =
+  \begin{cases}
+    \Theta(1) & \text{if~} n < 2 \\
+    T(n-1) + T_{\text{ins}}(n) & \text{if~} n \geq 2
+  \end{cases}
+\end{equation*}
+Using recurrence~(\ref{rec:ins}), we get the following time complexity
+results:
+\begin{itemize}
+\item $T(n) = \Theta(n)$ in the \emph{best case}, where the array is
+  already non-decreasingly ordered before the sorting, so that
+  $T_{\text{ins}}(n) = \Theta(1)$ at \emph{every} iteration of the
+  outer loop, because $A[j]$ is always kept by the inner loop
+  \emph{behind} the sorted sequence $A[0 \twodots j-1]$.  This result
+  follows from Theorem~\ref{thm:ind} below, for the constants $a=1$
+  and $b=2$.
+\item $T(n) = \Theta(n^2)$ in the \emph{average case}, defined here as
+  follows: \emph{on average} over the iterations of the outer loop,
+  the inner loop inserts $A[j]$ into the \emph{middle} of the sorted
+  sequence $A[0 \twodots j-1]$, so that $T_{\text{ins}}(n) =
+  \Theta(n)$ on average at \emph{every} iteration of the outer loop.
+  This can be proven by induction: $\langle$insert your proof
+  here$\rangle$.
+\item $T(n) = \Theta(n^2)$ in the \emph{worst case}, where the array
+  is non-\emph{increasingly} ordered before the execution of the
+  algorithm, so that $T_{\text{ins}}(n) = \Theta(n)$ at \emph{every}
+  iteration of the outer loop, because $A[j]$ is always inserted by
+  the inner loop at the \emph{beginning} of the sorted sequence $A[0
+  \twodots j-1]$.  This result has the same proof as in the average
+  case above.
+\end{itemize}
+In conclusion, \textsc{Insertion-Sort} takes $\Oh{n^2}$ time for an
+array of $n$ elements.
+
+\begin{theorem}
+  \label{thm:ind}
+  The following recurrence, for some \emph{constants} $a$ and $b$:
+  \[
+  T(n) =
+  \begin{cases}
+    \Theta(1) & \text{if~} n < b \\
+    a \cdot T(n-1) + \Theta(1) & \text{if~} n \geq b
+  \end{cases}
+  \]
+  has $\Theta(n)$ as closed form for $a = 1$, and $\Theta(a^n)$ as
+  closed form for $a > 1$.
+\end{theorem}
+
+\begin{proof}
+  By induction (left as an exercise to the reader in the AD1 course).
+\end{proof}
+
+\part{Weighted Interval Scheduling}\label{part:dp}
+\setcounter{section}{0} % reset the section counter for each part/problem
+
+\begin{quote}
+``Suppose we have a set $S = \Set{a_1, a_2, \dots, a_n}$ of $n$ proposed
+\emph{activities} that wish to use a resource, such as a lecture hall,
+which can serve only one activity at a time. Each activity $a_i$ has a
+\emph{start time} $s_i$ and a finish time $f_i$ , where
+$0 \leq s_i < f_i < \infty$. If selected, activity $a_i$ takes place
+during the half-open time interval $[s_i, f_i)$. Activities $a_i$ and
+$a_j$ are \emph{compatible} if the intervals $[s_i, f_i)$ and
+$[s_j, f_j)$ do not overlap. That is, $a_i$ and $a_j$ are compatible if
+$s_i \geq f_j$ or $s_j \geq f_i$. In the 
+\emph{activity-selection problem}, we wish to select a maximum-size
+subset of mutually compatible activities.''
+\end{quote}
+(Quoted from page~415 of
+CLRS3~\cite{CLRS}.)
+
+The weighted interval scheduling problem is an extension to the 
+activity-selection problem where activity $a_i$ has the weight $w_i$ and
+where an optimal solution is to be found. An optimal solution to the
+weighted interval problem is a subset,
+$O \subseteq \Set{a_1, a_2, \dots, a_n}$, where the total weights over
+the selected activities, $\sum \SetComp{w_i}{a_i \in O}$, is maximised.
+
+Additionally, the activities are sorted in non-decreasing order of
+finish times: $f_1 \leq f_2 \leq \cdots \leq f_n$ and the help function
+$p(i)$ gives the largest index $j < i$ such that activity $i$ and $j$ are
+compatible:
+
+\begin{equation} \label{dp:helpfun}
+  p(i) = 
+  \begin{cases}
+	\mathop{\mathrm{arg\,max}}\limits_{j\in 1 \twodots i-1} ( s_i \geq f_j ) & \hfill \qquad \text{if } \exists j \in 1\twodots i-1 : s_i \geq f_j \\
+	0 & \hfill \text{otherwise}
+  \end{cases}
+\end{equation}
+
+\medskip
+
+In the sequel of part~\ref{part:dp}, assume that the problem tasks in
+the assignment were as follows (actual assignment statements in this
+course may have other tasks):
+\begin{enumerate}
+\renewcommand{\theenumi}{\Alph{enumi}}
+\item Give a recursive equation for a parameterised quantity after 
+  stating its meaning in terms of all its parameters. Use the equation
+  to justify that the problem has the optimal substructure property
+  and overlapping subproblems, so that dynamic programming is applicable
+  to it.
+\item Motivate your choice between bottom-up iteration (for which you
+  must argue for  the chosen nesting and iteration order of the loops)
+  and top-down recursion for the Weighted Interval Scheduling Problem.
+\end{enumerate}
+
+\section{Recursive equation}
+\label{sec:recursive:actsel}
+
+The weighted interval scheduling problem can be represented by the following
+recursive function:
+
+\begin{equation} \label{dp:opt}
+  OPT(i) =
+  \begin{cases}
+    0 & \hfill \text{if } i = 0 \\
+    \max~\{~OPT(i - 1), w_i + OPT(p(i))~\} & \hfill \text{if } i > 0
+  \end{cases}
+\end{equation}
+
+Given an instance of the Weighted Interval Scheduling problem with an optimal
+solution $O$, $O \subseteq J$. The last activity, $a_n$, either belongs to
+$O$, $a_n \in O$, or it does not, $a_n \notin O$. If $a_n$ belongs to $O$,
+then all intervals not compatible with $a_n$,
+$\SetComp{a_i}{i \in p(n)+1 \twodots n-1}$, do not belong to $O$.
+
+Additionally, if $a_n$ belongs to $O$, then $O$ must include an optimal
+solution, $O^\prime_{p(n)}$, to the subproblem
+$\SetComp{a_i}{i \in 1 \twodots p(n)}$. If $O^\prime_{p(n)}$ is not optimal,
+then $O^\prime_{p(n)}$ could be modified into a solution that is optimal
+and where all activities are intrinsically compatible with $a_n$.
+
+If $a_n$ does not belong in $O$, then $O$ is an optimal solution to the
+subproblem $\SetComp{a_i}{i \in 1 \twodots n-1}$. The reasoning is
+analogous: assume that $a_n \notin O$; so if $O$ is not an
+optimal solution to the subproblem of activities
+$\SetComp{a_i}{a_i \in 1 \twodots n-1}$, then $O$ could be modified into
+a solution that is.
+
+Deciding if $a_n$ is to belong in $O$ thus require an optimal solution to the
+subproblems $\SetComp{a_i}{i \in 1\twodots j}$, with $j$ taking the value
+between $1$ and $n$, $j \in 1 \twodots n$, proving that Weighted Interval
+scheduling has optimal substructure.
+
+Given the index $i$ of an activity $a_i$, the recursive equation~\ref{dp:opt}
+returns the weight $0$ for index $0$, denoting an empty set of activities,
+and otherwise the optimal solution to the two subproblems: when activity $a_i$ does
+not belong to the optimal subproblem for the activities 
+$\SetComp{a_k}{k \in 1 \twodots i-1}$, or the optimal solution to the
+subproblem with activities $\SetComp{a_k}{k \in 1 \twodots p(i)}$ plus the additional
+weight $w_i$.
+
+There are some problem instances that have overlapping subproblems. For
+example; given the activities $\Set{a_1, a_2, \dots, a_n}$, $p(i)=k$, and $k\geq 1$,
+then the subproblem $\Set{a_1, a_2, \dots, a_k}$ will be calculated at least
+two times, once when finding the optimal solution for the problem $OPT(n)$ and
+once for the subproblem $OPT(k+1)$.
+
+\section{Bottom-Up Iteration and Top-Down Recursion}
+\label{sec:bottom-up-rec}
+
+Given the reasoning and the recursive function in task~\ref{sec:recursive:actsel},
+the optimal solution to each subproblem $S_i$, with $1 \leq i \leq n$
+and $S_i=\Set{a_1, \dots, a_i}$, will be found, giving
+bottom-up iteration and top-down recursion the same time complexity.
+We have chosen the bottom-up iterative approach. Our program
+uses a single loop where all activities are iterated over in
+increasing order of their indices, where activity $a_i$ has index $i$.
+
+
+\bibliographystyle{abbrv}
+\bibliography{ad2}  % Add your references to the ad2.bib file
+
+%% Comment away the following line before submitting:
+\input{appendix}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
